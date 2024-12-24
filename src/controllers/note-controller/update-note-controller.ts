@@ -6,15 +6,35 @@ export function updateNoteController(
   res: Response,
   next: NextFunction
 ) {
-  const noteId = Number(req.params.noteId);
-  const body = req.body;
+  try {
+    const noteId = Number(req.params.noteId);
+    const body = req.body;
 
-  noteService.update(noteId, {
-    name: body.name,
-    description: body.description,
-  });
+    const note = noteService.getById(noteId);
+    if (!note) {
+      // res.status(404).json({
+      //   message: "Note not found",
+      // });
+      next({
+        status: 404,
+        message: "Note not found",
+      });
+      return;
+    }
 
-  res.json({
-    message: "Note updated successfully!",
-  });
+    noteService.update(noteId, {
+      name: body.name,
+      description: body.description,
+    });
+
+    res.json({
+      message: "Note updated successfully!",
+    });
+  } catch (error) {
+    console.error("caught error", error);
+    next({
+      message: "Failed to update the note. Something went wrong in server!",
+      status: 500,
+    });
+  }
 }
