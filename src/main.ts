@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import { homeController } from "./controllers/home-controller";
 import { createNoteRoutes } from "./routes/note-route";
 import { AppError } from "./error";
+import fs from "fs";
 
 const app = express();
 
@@ -9,6 +10,11 @@ const app = express();
 app.use(express.json());
 
 app.get("/", homeController);
+
+app.get("/home", (req, res) => {
+  const homeFile = fs.readFileSync(`${process.cwd()}/pages/home.html`);
+  res.send(homeFile.toString());
+});
 
 // notes routes
 createNoteRoutes(app);
