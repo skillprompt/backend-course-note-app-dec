@@ -2,6 +2,7 @@ type TNote = {
   id: number;
   name: string;
   description: string;
+  priority: number;
 };
 
 let notes: TNote[] = [];
@@ -12,6 +13,7 @@ function create(input: Omit<TNote, "id">) {
     id: notes.length + 1,
     name: input.name,
     description: input.description,
+    priority: input.priority,
   });
 }
 
@@ -23,6 +25,7 @@ function update(toUpdateNoteId: number, input: Omit<TNote, "id">) {
         id: note.id,
         name: input.name,
         description: input.description,
+        priority: input.priority,
       };
     } else {
       return note;

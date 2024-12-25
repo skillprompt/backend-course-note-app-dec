@@ -2,10 +2,13 @@ export class AppError extends Error {
   status: number;
   message: string;
 
-  constructor(message: string, status: number) {
+  meta?: any;
+
+  constructor(message: string, status: number, meta?: any) {
     super(message);
     this.status = status;
     this.message = message;
+    this.meta = meta;
     Error.captureStackTrace(this);
   }
 }

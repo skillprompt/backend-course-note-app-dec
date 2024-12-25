@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { noteService } from "../../services/note";
-import { NoteNotFound } from "../../services/note-errors";
+import { InvalidNotePayload, NoteNotFound } from "../../services/note-errors";
 import { AppError } from "../../error";
 
 export function updateNoteController(
@@ -12,6 +12,14 @@ export function updateNoteController(
     const noteId = Number(req.params.noteId);
     const body = req.body;
 
+    if (typeof body.priority !== "number") {
+      const invalidPayloadError = new InvalidNotePayload({
+        mesage: "Priority should be a number",
+      });
+      next(invalidPayloadError);
+      return;
+    }
+
     const note = noteService.getById(noteId);
     if (!note) {
       const noteNotFoundError = new NoteNotFound();
@@ -22,6 +30,7 @@ export function updateNoteController(
     noteService.update(noteId, {
       name: body.name,
       description: body.description,
+      priority: body.priority,
     });
 
     res.json({
