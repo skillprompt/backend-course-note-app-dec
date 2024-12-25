@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { noteService } from "../../services/note";
+import { NoteNotFound } from "../../services/note-errors";
+import { AppError } from "../../error";
 
 export function updateNoteController(
   req: Request,
@@ -12,13 +14,8 @@ export function updateNoteController(
 
     const note = noteService.getById(noteId);
     if (!note) {
-      // res.status(404).json({
-      //   message: "Note not found",
-      // });
-      next({
-        status: 404,
-        message: "Note not found",
-      });
+      const noteNotFoundError = new NoteNotFound();
+      next(noteNotFoundError);
       return;
     }
 
@@ -31,10 +28,10 @@ export function updateNoteController(
       message: "Note updated successfully!",
     });
   } catch (error) {
-    console.error("caught error", error);
-    next({
-      message: "Failed to update the note. Something went wrong in server!",
-      status: 500,
-    });
+    const appError = new AppError(
+      "Failed to update the note. Something went wrong in server!",
+      500
+    );
+    next(appError);
   }
 }

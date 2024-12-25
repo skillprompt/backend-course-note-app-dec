@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import { homeController } from "./controllers/home-controller";
 import { createNoteRoutes } from "./routes/note-route";
+import { AppError } from "./error";
 
 const app = express();
 
@@ -13,8 +14,8 @@ app.get("/", homeController);
 createNoteRoutes(app);
 
 // global error handler
-app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-  console.log("error", error);
+app.use((error: AppError, req: Request, res: Response, next: NextFunction) => {
+  console.error("Caught error:::", error);
   res.status(error.status || 500).json({
     message: error.message,
   });
