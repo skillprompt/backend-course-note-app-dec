@@ -4,6 +4,8 @@ import { createNoteRoutes } from "./routes/note-route";
 import { AppError } from "./error";
 import fs from "fs";
 
+import "./db";
+
 const app = express();
 
 // json parser
