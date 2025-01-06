@@ -1,3 +1,5 @@
+import { conn } from "../db";
+
 type TNote = {
   id: number;
   name: string;
@@ -9,12 +11,28 @@ let notes: TNote[] = [];
 
 // create
 function create(input: Omit<TNote, "id">) {
-  notes.push({
-    id: notes.length + 1,
-    name: input.name,
-    description: input.description,
-    priority: input.priority,
-  });
+  // notes.push({
+  //   id: notes.length + 1,
+  //   name: input.name,
+  //   description: input.description,
+  //   priority: input.priority,
+  // });
+  // db connection
+  // INSERT INTO
+  conn.query(
+    `
+    INSERT INTO notes 
+      (name, description, priority) 
+    VALUES 
+      ("${input.name}", "${input.description}", ${input.priority});`,
+    (err, result) => {
+      if (err) {
+        console.error("Error creating notes in db", err);
+      } else {
+        console.log("note created in db", result);
+      }
+    }
+  );
 }
 
 // update
