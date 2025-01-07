@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import { noteService } from "../../services/note";
 
-export function getNoteByIdController(
+export async function getNoteByIdController(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   const noteId = Number(req.params.noteId);
 
-  const note = noteService.getById(noteId);
+  const note = await noteService.getById(noteId);
 
   if (!note) {
     res.status(404).json({

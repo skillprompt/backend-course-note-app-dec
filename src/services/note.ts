@@ -1,4 +1,5 @@
 import { conn } from "../db";
+import { connPromise } from "../db-promise";
 
 type TNote = {
   id: number;
@@ -37,20 +38,38 @@ function create(input: Omit<TNote, "id">) {
 
 // update
 function update(toUpdateNoteId: number, input: Omit<TNote, "id">) {
-  const updatedNotes = notes.map((note) => {
-    if (note.id === toUpdateNoteId) {
-      return {
-        id: note.id,
-        name: input.name,
-        description: input.description,
-        priority: input.priority,
-      };
-    } else {
-      return note;
-    }
-  });
+  // const updatedNotes = notes.map((note) => {
+  //   if (note.id === toUpdateNoteId) {
+  //     return {
+  //       id: note.id,
+  //       name: input.name,
+  //       description: input.description,
+  //       priority: input.priority,
+  //     };
+  //   } else {
+  //     return note;
+  //   }
+  // });
 
-  notes = updatedNotes;
+  // notes = updatedNotes;
+
+  conn.query(
+    `
+    UPDATE notes SET
+    name="${input.name}",
+    description="${input.description}",
+    priority=${input.priority}
+    WHERE 
+    id=${toUpdateNoteId}
+  `,
+    (err, result) => {
+      if (err) {
+        console.error("Failed to update", err);
+      } else {
+        console.log("updated", result);
+      }
+    }
+  );
 }
 
 // delete
@@ -67,15 +86,27 @@ function deleteNote(toDeleteNoteId: number) {
 }
 
 // getById
-function getById(noteId: number) {
-  const note = notes.find((note) => {
-    if (note.id === noteId) {
-      return true;
-    } else {
-      return false;
-    }
-  });
-  return note;
+async function getById(noteId: number) {
+  // const note = notes.find((note) => {
+  //   if (note.id === noteId) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // });
+  // return note;
+
+  const conn = await connPromise;
+
+  const [rows] = await conn.execute(
+    `
+    SELECT * FROM notes
+    WHERE id=${noteId}
+    `
+  );
+
+  // @ts-ignore
+  return rows[0];
 }
 
 // getAll
