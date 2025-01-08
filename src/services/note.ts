@@ -109,9 +109,30 @@ async function getById(noteId: number) {
   return rows[0];
 }
 
+export type TSort = "asc" | "desc";
+
+export type TSortInput = { sortKey: string; direction: TSort };
+
+export type TPagination = {
+  page: number;
+  perPage: number;
+};
+
 // getAll
-function getAll() {
-  return notes;
+async function getAll(sort: TSortInput, pagination: TPagination) {
+  const conn = await connPromise;
+
+  const offset = (pagination.page - 1) * pagination.perPage;
+
+  const [rows] = await conn.execute(
+    `
+    SELECT * FROM notes 
+    ORDER BY ${sort.sortKey} ${sort.direction}
+    LIMIT ${pagination.perPage} OFFSET ${offset}
+    `
+  );
+
+  return rows;
 }
 
 export const noteService = {
